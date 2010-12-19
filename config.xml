@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets">
     <name>Dicionário!</name>
-    <description>Um dicionário da lingua portuguêsa.</description>
+    <description>Um dicionário da lingua portuguesa.</description>
     <author href="http://www.oraculum.blog.br" email="damon@oraculum.net.br">Oraculum</author>
     <icon src="logo.png" />
 </widget>
