@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br" >
+<head>
+    <title>Dicionário PT</title>
+    <style type="text/css">
+        h1
+        {
+            font: 14px helvetica, arial;
+            text-align: center;
+        }
+    </style>
+
+    <script type="text/javascript" language="javascript">
+        function definir() {
+            var pal = document.getElementById('pal').value;
+            var caminho = "http://www.priberam.pt/SimpleDLPO/VistaGadgetDLPO.aspx?pal=" + pal;
+
+            window.open(caminho,'Dicionário PT',
+              'width=356,height=300,location=yes,scrollbars=yes');
+        }
+</script>
+</head>
+<body onLoad="document.f1.pal.focus()">
+    <h1>Dicionário Português</h1>
+    <br />
+    <div>
+       <form method="get" name="f1" action="javascript:definir();">
+            <input id="pal" type="text" name="pal" maxlength="25" />
+	        <input type="submit" onclick="definir();" id="accao" name="accao" value="definir" />
+       </form>
+    </div>
+</body>
+</html>
