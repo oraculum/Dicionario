@@ -2,11 +2,20 @@
 <html lang="pt-br" >
 <head>
     <script>
-        window.addEventListener("load", function(){
+        var activeTab_UUID = 0;
+
+        window.addEventListener("load", function () {
+            var badgeSelectionMark = (opera.buildNumber() == "1029" ? " SEL " : " s ");
             var theButton;
             var ToolbarUIItemProperties = {
                 title: "Dicionário !",
-                icon: "logo.png",
+                icon: "logo/logo.png",
+                badge: {
+                    display: "none",
+                    textContent: badgeSelectionMark,
+                    color: "black",
+                    backgroundColor: "rgba(72, 61, 139, 0)"
+                },
                 popup: {
                     href: "popup.html",
                     width: 300,
@@ -15,7 +24,61 @@
             }
             theButton = opera.contexts.toolbar.createItem(ToolbarUIItemProperties);
             opera.contexts.toolbar.addItem(theButton);
+
+
+            opera.extension.tabs.onfocus = function () {
+                if (!opera.extension.tabs.getFocused())	// if we can't work with active page
+                {
+                    theButton.badge.textContent = "    ";
+                    theButton.badge.backgroundColor = "rgba(255, 0, 0, 1)";
+                    theButton.badge.display = "block";
+                }
+                else {
+                    theButton.badge.display = "none";
+                    theButton.badge.textContent = badgeSelectionMark;
+                    theButton.badge.backgroundColor = "rgba(255, 252, 200, 1)";
+                }
+            }
+
+            opera.extension.onmessage = function (request) {
+                var action = request.data.action;
+                if (action == "get_active_page_data")	// from popup
+                {
+                    var activeTab = opera.extension.tabs.getFocused();
+                    if (activeTab)
+                        opera.extension.broadcastMessage({ action: "get_active_page_data", uuid: activeTab_UUID }); // activeTab is not enough. Page can has a frames...
+                    else
+                        opera.extension.broadcastMessage({ action: "set_active_page_data" }); // TODO: send directly to popup, when it will be possible
+                }
+                else if (action == "set_active_page_data")	// from userJs
+                {
+                    if (activeTab_UUID == request.data.uuid)
+                        opera.extension.broadcastMessage(request.data);
+                }
+                
+                else if (action == "setup_active_tab")	// from userJs
+                {
+                    // fix bug with recursive reloading popup on trying open new page while popup is opened
+                    if (activeTab_UUID != request.data.uuid) theButton.disabled = true;
+
+                    activeTab_UUID = request.data.uuid;
+                    theButton.badge.display = (request.data.selection == "" ? "none" : "block");
+                    opera.extension.tabs.onfocus();
+
+                    // fix bug with recursive reloading popup on trying open new page while popup is opened
+                    theButton.disabled = false;
+                }
+                else if (action == "selection_changed")	// from userJs
+                {
+                    if (activeTab_UUID == request.data.uuid)
+                        theButton.badge.display = (request.data.selection == "" ? "none" : "block");
+                }
+            };
+
         }, false);
+
+
+      
     </script>
 </head>
 <body>

@@ -19,6 +19,38 @@
               'width=356,height=300,location=yes,scrollbars=yes');
         }
 </script>
+   
+<script>
+
+    window.addEventListener('DOMContentLoaded', function () {
+        var i;
+            // setup message handlers
+			opera.extension.onmessage = function(status)
+			{
+				if (status.data.action == "set_active_page_data")
+				{
+					activePage = { url:status.data.url, title:status.data.title }
+					
+					var fromText = document.getElementById("pal");
+					var prev_value = localStorage.getItem("UltimoTexto");
+					if (status.data.selection && (prev_value != status.data.selection))		// if new selection
+					{
+						fromText.value = status.data.selection;
+						StoreLastFromText(fromText.value);
+						TranslateText(true);
+					}
+					else
+					{
+						if (prev_value)
+							document.getElementById("pal").value = prev_value;
+					}
+				}
+			};
+
+		opera.extension.postMessage( {action:"get_active_page_data"} );
+		document.getElementById("pal").focus();
+	}, false);
+</script>
 </head>
 <body onLoad="document.f1.pal.focus()">
     <h1>Dicionário Português</h1>
